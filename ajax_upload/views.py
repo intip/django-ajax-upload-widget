@@ -1,10 +1,10 @@
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect,csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
+from django.conf import settings
 
 import base64
-import re
 import uuid
 
 def get_a_uuid():
@@ -43,6 +43,6 @@ class AjaxUploaderView(View):
             return JsonResponse({'path': path_files })
         else:
             return JsonResponse({'error': MESSAGE_ERROR})
-            
-    def get_test_regex(self, value):
+
+    def get_test_regex(self, test_value):
         return True
