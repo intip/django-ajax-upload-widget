@@ -22,7 +22,7 @@ class AjaxClearableFileInput(forms.ClearableFileInput):
             'class': attrs.get('class', '') + 'ajax-upload',
             'data-filename': filename,  # This is so the javascript can get the actual value
             'data-required': self.is_required or '',
-            'data-upload-url': self.reverse_default
+            'data-upload-url': reverse(self.reverse_default)
         })
         output = super(AjaxClearableFileInput, self).render(name, value, attrs)
         return mark_safe(output)
