@@ -98,12 +98,20 @@
                 console.log(data);
             }
         } else {
-            this.$hiddenElement.val(data.path);
-            var tmp = this.$element;
-            this.$element = this.$element.clone(true).val('');
-            tmp.replaceWith(this.$element);
-            this.displaySelection();
-            if(this.options.onComplete) this.options.onComplete.call(this, data.path);
+            if(data.path){
+                this.$hiddenElement.val(data.path);
+                this.$hiddenElement.parent().find('.help-block').remove()
+                this.$hiddenElement.parent().parent().removeClass("has-error").addClass("has-success")
+            }else if(data.error){
+                this.$hiddenElement.parent().append('<div class="help-block">' + data.error + '</div>')
+                this.$hiddenElement.parent().parent().removeClass("has-success").addClass("has-error")
+                console.log(this.$hiddenElement.parents().find(".has-success").addClass("has-error"));
+            }
+                var tmp = this.$element;
+                this.$element = this.$element.clone(true).val('');
+                tmp.replaceWith(this.$element);
+                this.displaySelection();
+                if(this.options.onComplete) this.options.onComplete.call(this, data.path);
         }
     };
 
@@ -143,12 +151,6 @@
         // Returns the html output for displaying the given uploaded filename to the user.
         var prettyFilename = this.prettifyFilename(filename);
         var output = '<a href="'+filename+'" target="_blank">'+prettyFilename+'';
-        $.each(['jpg', 'jpeg', 'png', 'gif'], function(i, ext) {
-            if(filename.toLowerCase().slice(-ext.length) == ext) {
-                output += '<img src="'+filename+'"/>';
-                return false;
-            }
-        });
         output += '</a>';
         return output;
     };
