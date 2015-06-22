@@ -17,7 +17,7 @@ class FormUploadMixin(forms.ModelForm):
             self).is_valid()
 
         if(valid):
-            for(field in fileds):
+            for field in self.fields:
                 self.move_file(field)
 
         return valid
