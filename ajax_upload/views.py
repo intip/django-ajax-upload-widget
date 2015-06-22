@@ -31,7 +31,7 @@ class AjaxUploaderView(View):
                 name = get_a_uuid() + type
                 path = settings.MEDIA_ROOT + "tmp/%s" % name
 
-                path_files.append(path)
+                path_files.append(name)
 
                 destination = open(path, 'wb+')
                 destination.write(file.read())
