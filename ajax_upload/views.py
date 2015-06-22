@@ -42,7 +42,7 @@ class AjaxUploaderView(View):
         if error == 0:
             return JsonResponse({'path': path_files })
         else:
-            return JsonResponse({'error': MESSAGE_ERROR})
+            return JsonResponse({'error': self.MESSAGE_ERROR})
 
     def get_test_regex(self, test_value):
         return True
