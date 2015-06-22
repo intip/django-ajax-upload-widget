@@ -3,7 +3,7 @@ from .utils import move_file
 
 
 class FormUploadMixin(forms.ModelForm):
-    fields = []
+    file_fields = []
     destination = "/"
 
     def move_file(self, field):
@@ -13,11 +13,11 @@ class FormUploadMixin(forms.ModelForm):
     
     def is_valid(self):
         valid = super(
-            TeacherForm, 
+            FormUploadMixin, 
             self).is_valid()
 
         if(valid):
-            for field in self.fields:
+            for field in self.file_fields:
                 self.move_file(field)
 
         return valid
