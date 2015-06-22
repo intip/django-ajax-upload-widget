@@ -7,10 +7,22 @@ class FormUploadMixin(forms.ModelForm):
     destination = "/"
 
     def move_file(self, field):
-        data = self.data[field]
-        url_dst = move_file(data, self.destination)
-        self.cleaned_data[field] = url_dst
-    
+        import ipdb; ipdb.set_trace()
+        i = self.data[field].find(',')
+        if(i == -1):
+            data = self.data[field]
+            url_dst = move_file(data, self.destination)
+            self.cleaned_data[field] = url_dst
+        else:
+            files = self.data[field].split(",")
+            path_files = []
+
+            for file in files:
+                url_dst = move_file(file, self.destination)
+                path_files.append(url_dst)
+
+            self.cleaned_data[field] = path_files
+
     def is_valid(self):
         valid = super(
             FormUploadMixin, 

@@ -10,7 +10,8 @@ class AjaxUploadException(Exception):
 class AjaxClearableFileInput(forms.ClearableFileInput):
     template_with_clear = ''  # We don't need this
     template_with_initial = '%(input)s'
-    reverse_default = "ajax-upload"
+    reverse_default = 'ajax-upload'
+    multiple_uploads = False
 
     def render(self, name, value, attrs=None):
         attrs = attrs or {}
@@ -22,7 +23,8 @@ class AjaxClearableFileInput(forms.ClearableFileInput):
             'class': attrs.get('class', '') + 'ajax-upload',
             'data-filename': filename, 
             'data-required': self.is_required or '',
-            'data-upload-url': reverse(self.reverse_default)
+            'data-upload-url': reverse(self.reverse_default),
+            'data-multiple-uploads': self.multiple_uploads,
         })
         output = super(AjaxClearableFileInput, self).render(name, value, attrs)
         return mark_safe(output)

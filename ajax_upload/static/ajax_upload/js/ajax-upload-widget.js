@@ -2,11 +2,12 @@
     var global = this;
     var $ = global.$;
     var console = global.console || {log: function() {}};
+    var data_multiple = new Array();
 
     var AjaxUploadWidget = global.AjaxUploadWidget = function(element, options) {
         this.options = {
-            changeButtonText: 'Change',
-            removeButtonText: 'Remove',
+            changeButtonText: 'Trocar',
+            removeButtonText: 'Remover',
             previewAreaClass: 'ajax-upload-preview-area',
             previewFilenameLength: 30,
             onUpload: null, // right before uploading to the server
@@ -16,6 +17,7 @@
         };
         $.extend(this.options, options);
         this.$element = $(element);
+        this.old_element = $(element);
         this.initialize();
     };
 
@@ -66,6 +68,11 @@
         this.$changeButton.after(this.$removeButton);
 
         this.displaySelection();
+
+        this.multiple_uploads = false;
+        if(this.$element.data('multiple-uploads') == 'True'){
+            this.multiple_uploads = true;
+        }
     };
 
     AjaxUploadWidget.prototype.upload = function() {
@@ -107,11 +114,19 @@
                 this.$hiddenElement.parent().parent().removeClass("has-success").addClass("has-error")
                 console.log(this.$hiddenElement.parents().find(".has-success").addClass("has-error"));
             }
-                var tmp = this.$element;
-                this.$element = this.$element.clone(true).val('');
-                tmp.replaceWith(this.$element);
-                this.displaySelection();
-                if(this.options.onComplete) this.options.onComplete.call(this, data.path);
+            var tmp = this.$element;
+            this.$element = this.$element.clone(true).val('');
+            tmp.replaceWith(this.$element);
+            this.displaySelection();
+
+            if(this.multiple_uploads){
+                var el = $("<div class='col-xs-12'></div>").append(this.old_element.parent());
+                console.log(el.html());
+                this.$element.parents('.row').append(el);
+                new AjaxUploadWidget($(el).find('input[type="file"].ajax-upload'), {});
+            }
+
+            if(this.options.onComplete) this.options.onComplete.call(this, data.path);
         }
     };
 
