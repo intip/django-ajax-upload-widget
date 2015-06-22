@@ -17,7 +17,6 @@ class AjaxUploaderView(View):
 
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
         files = request.FILES.getlist('file')
         data = {}
         path_files = []
