@@ -13,7 +13,7 @@ def get_a_uuid():
 
 
 class AjaxUploaderView(View):
-    MESSAGE_ERROR = 'Tipo de arquivo inválido.'
+    MESSAGE_ERROR = u'Tipo de arquivo inválido.'
 
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
