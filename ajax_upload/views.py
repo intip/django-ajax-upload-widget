@@ -1,21 +1,47 @@
-import json
-
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.generic.base import View
+from django.conf import settings
 
-from ajax_upload.forms import UploadedFileForm
+import base64
+import uuid
+
+def get_a_uuid():
+    r_uuid = base64.urlsafe_b64encode(uuid.uuid4().bytes)
+    return r_uuid.replace('=', '')
 
 
-@csrf_exempt
-@require_POST
-def upload(request):
-    form = UploadedFileForm(data=request.POST, files=request.FILES)
-    if form.is_valid():
-        uploaded_file = form.save()
-        data = {
-            'path': uploaded_file.file.url,
-        }
-        return HttpResponse(json.dumps(data))
-    else:
-        return HttpResponseBadRequest(json.dumps({'errors': form.errors}))
+class AjaxUploaderView(View):
+    MESSAGE_ERROR = 'Tipo de arquivo inválido.'
+
+    @method_decorator(csrf_exempt)
+    def post(self, request, *args, **kwargs):
+        files = request.FILES.getlist('file')
+        data = {}
+        path_files = []
+        error = 0
+
+        for file in files:
+            file_name = file._name
+            type = file_name[file_name.rfind('.'):]
+
+            if self.get_test_regex(type):
+                name = get_a_uuid() + type
+                path = settings.MEDIA_ROOT + "tmp/%s" % name
+
+                path_files.append(name)
+
+                destination = open(path, 'wb+')
+                destination.write(file.read())
+                destination.close()
+            else:
+                error = 1
+
+        if error == 0:
+            return JsonResponse({'path': path_files })
+        else:
+            return JsonResponse({'error': self.MESSAGE_ERROR})
+
+    def get_test_regex(self, test_value):
+        return True

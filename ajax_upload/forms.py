@@ -1,19 +1,35 @@
-import uuid
-
 from django import forms
+from .utils import move_file
 
-from ajax_upload.models import UploadedFile
 
+class FormUploadMixin(forms.ModelForm):
+    file_fields = []
+    destination = "/"
 
-class UploadedFileForm(forms.ModelForm):
+    def move_file(self, field):
+        import ipdb; ipdb.set_trace()
+        i = self.data[field].find(',')
+        if(i == -1):
+            data = self.data[field]
+            url_dst = move_file(data, self.destination)
+            self.cleaned_data[field] = url_dst
+        else:
+            files = self.data[field].split(",")
+            path_files = []
 
-    class Meta:
-        model = UploadedFile
-        fields = ('file',)
+            for file in files:
+                url_dst = move_file(file, self.destination)
+                path_files.append(url_dst)
 
-    def clean_file(self):
-        data = self.cleaned_data['file']
-        # Change the name of the file to something unguessable
-        # Construct the new name as <unique-hex>-<original>.<ext>
-        data.name = u'%s-%s' % (uuid.uuid4().hex, data.name)
-        return data
+            self.cleaned_data[field] = path_files
+
+    def is_valid(self):
+        valid = super(
+            FormUploadMixin, 
+            self).is_valid()
+
+        if(valid):
+            for field in self.file_fields:
+                self.move_file(field)
+
+        return valid
