@@ -19,6 +19,8 @@
         this.$element = $(element);
         this.old_element = $(element);
         this.initialize();
+        this.src = this.options.src;
+        this.change = false;
     };
 
     AjaxUploadWidget.prototype.DjangoAjaxUploadError = function(message) {
@@ -40,7 +42,7 @@
         this.$element.after(this.$hiddenElement);
 
         // Initialize preview area and action buttons
-        this.$previewArea = $('<div class="'+this.options.previewAreaClass+'"></div>');
+        this.$previewArea = $('<div class="'+this.options.previewAreaClass+'" style="display:none"></div>');
         this.$element.before(this.$previewArea);
 
         // Listen for when a file is selected, and perform upload
@@ -50,6 +52,7 @@
         this.$changeButton = $('<button type="button" class="btn-change"></button>')
             .text(this.options.changeButtonText)
             .on('click', function(evt) {
+                self.change = true;
                 self.$element.show();
                 $(this).hide();
             });
@@ -72,7 +75,7 @@
         this.multiple_uploads = false;
         if(this.$element.data('multiple-uploads') == 'True'){
             this.parent = this.$element.parent().parent();
-            this.row = $("<div class='col-xs-12'></div>");
+            this.row = $("<div class='col-xs-12 upload_field'></div>");
             this.row.append(this.$element.clone());
             this.count = 0;
             this.multiple_uploads = true;
@@ -124,13 +127,18 @@
 
             if(this.options.onComplete) this.options.onComplete.call(this, data.path);
 
-            if(this.multiple_uploads){
+            if(this.multiple_uploads && !this.change){
                 var r = this.row.find("input[type=file]");
                 r.attr("id", "id_" + this.name + "_" + this.count);
                 r.attr("name", this.name);
                 r.attr("data-multiple-upĺoads", "True");
-                new AjaxUploadWidget(r, this.options);
+                r.attr("data-required", "False");
                 this.parent.append(this.row);
+                new AjaxUploadWidget(r, {"src":this.options.src});
+                console.log("asdsadsa");
+                console.log(this.parent);
+                this.count++;
+                alert(1);
             }
 
         }
@@ -171,6 +179,9 @@
     AjaxUploadWidget.prototype.generateFilePreview = function(filename) {
         // Returns the html output for displaying the given uploaded filename to the user.
         var prettyFilename = this.prettifyFilename(filename);
+        if(this.options.src){
+            filename = this.options.src + filename;
+        }
         var output = '<a href="'+filename+'" target="_blank">'+prettyFilename+'';
         output += '</a>';
         return output;

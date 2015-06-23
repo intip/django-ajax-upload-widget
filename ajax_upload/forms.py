@@ -32,6 +32,11 @@ class FormUploadMixin(forms.ModelForm):
         self.cleaned_data[field] = path_files
 
     def is_valid(self):
+        data = self.data.getlist("documents_copy")
+        for index, file in enumerate(data):
+            if(file == ""):
+                data.pop(index)
+
         valid = super(
             FormUploadMixin, 
             self).is_valid()
