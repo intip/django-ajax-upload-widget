@@ -7,7 +7,6 @@ class FormUploadMixin(forms.ModelForm):
     destination = "/"
 
     def move_file(self, field):
-        import ipdb; ipdb.set_trace()
         i = self.data[field].find(',')
         if(i == -1):
             data = self.data[field]
