@@ -71,6 +71,10 @@
 
         this.multiple_uploads = false;
         if(this.$element.data('multiple-uploads') == 'True'){
+            this.parent = this.$element.parent().parent();
+            this.row = $("<div class='col-xs-12'></div>");
+            this.row.append(this.$element.clone());
+            this.count = 0;
             this.multiple_uploads = true;
         }
     };
@@ -112,21 +116,23 @@
             }else if(data.error){
                 this.$hiddenElement.parent().append('<div class="help-block">' + data.error + '</div>')
                 this.$hiddenElement.parent().parent().removeClass("has-success").addClass("has-error")
-                console.log(this.$hiddenElement.parents().find(".has-success").addClass("has-error"));
             }
             var tmp = this.$element;
             this.$element = this.$element.clone(true).val('');
             tmp.replaceWith(this.$element);
             this.displaySelection();
 
+            if(this.options.onComplete) this.options.onComplete.call(this, data.path);
+
             if(this.multiple_uploads){
-                var el = $("<div class='col-xs-12'></div>").append(this.old_element.parent());
-                console.log(el.html());
-                this.$element.parents('.row').append(el);
-                new AjaxUploadWidget($(el).find('input[type="file"].ajax-upload'), {});
+                var r = this.row.find("input[type=file]");
+                r.attr("id", "id_" + this.name + "_" + this.count);
+                r.attr("name", this.name);
+                r.attr("data-multiple-upĺoads", "True");
+                new AjaxUploadWidget(r, this.options);
+                this.parent.append(this.row);
             }
 
-            if(this.options.onComplete) this.options.onComplete.call(this, data.path);
         }
     };
 

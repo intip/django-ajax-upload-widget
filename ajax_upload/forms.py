@@ -7,20 +7,29 @@ class FormUploadMixin(forms.ModelForm):
     destination = "/"
 
     def move_file(self, field):
-        i = self.data[field].find(',')
-        if(i == -1):
-            data = self.data[field]
-            url_dst = move_file(data, self.destination)
-            self.cleaned_data[field] = url_dst
-        else:
-            files = self.data[field].split(",")
-            path_files = []
+        data = self.data.getlist(field)
+        path_files = []
+        print data
 
-            for file in files:
-                url_dst = move_file(file, self.destination)
-                path_files.append(url_dst)
+        for file in data:
+            i = file.find(',')
 
-            self.cleaned_data[field] = path_files
+            if(i == -1):
+                if(len(data) > 1):
+                    url_dst = move_file(file, self.destination)
+                    path_files.append(url_dst)
+                else:
+                    url_dst = move_file(file, self.destination)
+                    path_files = url_dst
+                    break;
+            else:
+                files = self.data[field].split(",")
+
+                for file_1 in files:
+                    url_dst = move_file(file_1, self.destination)
+                    path_files.append(url_dst)
+
+        self.cleaned_data[field] = path_files
 
     def is_valid(self):
         valid = super(

@@ -25,10 +25,9 @@ class AjaxUploaderView(View):
         for file in files:
             file_name = file._name
             type = file_name[file_name.rfind('.'):]
-
             if self.get_test_regex(type):
-                name = get_a_uuid() + type
-                path = settings.MEDIA_ROOT + "tmp/%s" % name
+                name = "tmp/%s" % (get_a_uuid() + type)
+                path = settings.MEDIA_ROOT + name
 
                 path_files.append(name)
 
